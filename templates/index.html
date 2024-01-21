@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Anomaly Detection</title>
+    <meta content="" name="description">
+    <meta content="" name="keywords">
+    {% load static %}
+    <link href="{% static "img/favicon.png" %}" rel="icon">
+    <link href="{% static "img/apple-touch-icon.png" %}" rel="apple-touch-icon">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static "vendor/bootstrap/css/bootstrap.min.css" %}" rel="stylesheet">
+    <link href="{% static "vendor/bootstrap-icons/bootstrap-icons.css" %}" rel="stylesheet">
+    <link href="{% static "vendor/boxicons/css/boxicons.min.css" %}" rel="stylesheet">
+    <link href="{% static "vendor/quill/quill.snow.css" %}" rel="stylesheet">
+    <link href="{% static "vendor/quill/quill.bubble.css" %}" rel="stylesheet">
+    <link href="{% static "vendor/remixicon/remixicon.css" %}" rel="stylesheet">
+    <link href="{% static "vendor/simple-datatables/style.css" %}" rel="stylesheet">
+
+    <!-- Template Main CSS File -->
+    <link href="{% static "css/style.css" %}" rel="stylesheet">
+
+</head>
+<body>
+      <!-- ======= Header ======= -->
+  <header id="header" class="header fixed-top d-flex align-items-center">
+
+    <div class="d-flex align-items-center justify-content-between">
+      <a href="/login/index/" class="logo d-flex align-items-center">
+        <img src="{% static "img/logo.png" %}" alt="">
+        <span class="d-none d-lg-block">AnomalyDetection</span>
+      </a>
+      <i class="bi bi-list toggle-sidebar-btn"></i>
+    </div><!-- End Logo -->
+
+    <nav class="header-nav ms-auto">
+      <ul class="d-flex align-items-center">
+
+        <li class="nav-item d-block d-lg-none">
+          <a class="nav-link nav-icon search-bar-toggle " href="#">
+            <i class="bi bi-search"></i>
+          </a>
+        </li><!-- End Search Icon-->
+
+
+        <li class="nav-item dropdown pe-3">
+
+          <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+            <img src="{% static "img/profile-img.jpg" %}" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{ request.session.is_log }}</span>
+          </a><!-- End Profile Iamge Icon -->
+
+          <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+            <li class="dropdown-header">
+              <h6>{{ request.session.user_name }}</h6>
+            </li>
+
+
+          </ul><!-- End Profile Dropdown Items -->
+        </li><!-- End Profile Nav -->
+
+      </ul>
+    </nav><!-- End Icons Navigation -->
+
+  </header><!-- End Header -->
+
+<!-- ======= Sidebar ======= -->
+  <aside id="sidebar" class="sidebar">
+
+    <ul class="sidebar-nav" id="sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link " href="/login/index/">
+          <i class="bi bi-grid"></i>
+          <span>首页</span>
+        </a>
+      </li><!-- End Dashboard Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-journal-text"></i><span>异常检测</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="/index/">
+              <i class="bi bi-circle"></i><span>CSV文件检测</span>
+            </a>
+          </li>
+          <li>
+            <a href="/index2/">
+              <i class="bi bi-circle"></i><span>PCAP文件检测</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Forms Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/admin/">
+          <i class="bi bi-card-list"></i>
+          <span>管理员入口</span>
+        </a>
+      </li><!-- End Register Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/login/register/">
+          <i class="bi bi-card-list"></i>
+          <span>注册</span>
+        </a>
+      </li><!-- End Register Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/login/login/">
+          <i class="bi bi-box-arrow-in-right"></i>
+          <span>登录</span>
+        </a>
+      </li><!-- End Login Page Nav -->
+
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="/login/logout/">
+          <i class="bi bi-dash-circle"></i>
+          <span>退出</span>
+        </a>
+      </li><!-- End Error 404 Page Nav -->
+
+
+
+    </ul>
+
+  </aside><!-- End Sidebar-->
+
+
+<main id="main" class="main">
+    <div class="pagetitle">
+      <h1>首页</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/login/index/">Home</a></li>
+        </ol>
+      </nav>
+    </div>
+
+
+
+    <section class="section">
+        <div class="row">
+         <div class = col-12>
+             <div class="row">
+                 <div class="col-lg-8">
+             <div class="card">
+                 <div class="card-body">
+                     <h5 class="card-title">CICIDS 2017数据集信息</h5>
+                     <table class="table table-sm">
+                         <thead>
+                         <tr>
+                             <th scope="col">流量记录时间</th>
+                             <th scope="col">pcap文件大小</th>
+                             <th scope="col">持续时间</th>
+                             <th scope="col">csv文件大小</th>
+                             <th scope="col">攻击名称</th>
+                             <th scope="col">流量统计</th>
+                         </tr>
+                         </thead>
+                         <tbody>
+                         <tr>
+                             <td>Monday</td>
+                             <td>10GB</td>
+                             <td>All Day</td>
+                             <td>257MB</td>
+                             <td>No Attack</td>
+                             <td>529918</td>
+                         </tr>
+                         <tr>
+                             <td>Tuesday</td>
+                             <td>10GB</td>
+                             <td>All Day</td>
+                             <td>166MB</td>
+                             <td>FTP-Patator,SSH-Patator</td>
+                             <td>445909</td>
+                         </tr>
+                         <tr>
+                             <td>Wednesday</td>
+                             <td>12GB</td>
+                             <td>All Day</td>
+                             <td>272MB</td>
+                             <td>DoS slowloris,DoS Slowhttptest,Heartbleed</td>
+                             <td>692703</td>
+                         </tr>
+                         <tr>
+                             <td rowspan="2">Thursday</td>
+                             <td rowspan="2">7.7GB</td>
+                             <td>Morning</td>
+                             <td>87.7MB</td>
+                             <td>Web Attacks(Brute,XSS,Sql Injection)</td>
+                             <td>170366</td>
+                         </tr>
+                         <tr>
+                             <td>Afternoon</td>
+                             <td>103MB</td>
+                             <td>Infiltration</td>
+                             <td>288602</td>
+                         </tr>
+                         <tr>
+                             <td rowspan="3">Friday</td>
+                             <td rowspan="3">8.2GB</td>
+                             <td>Morning</td>
+                             <td>71.8MB</td>
+                             <td>Bot</td>
+                             <td>192033</td>
+                         </tr>
+                         <tr>
+                             <td>Afternoon</td>
+                             <td>92.7MB</td>
+                             <td>DDoS</td>
+                             <td>225745</td>
+                         </tr>
+                         <tr>
+                             <td>Afternoon</td>
+                             <td>97.1MB</td>
+                             <td>PortScan</td>
+                             <td>286467</td>
+                         </tr>
+                         </tbody>
+                     </table>
+                 </div>
+             </div>
+                 </div>
+
+        <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">流量分布</h5>
+
+              <!-- Pie Chart -->
+              <canvas id="pieChart" style="max-height: 300px;"></canvas>
+              <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                  new Chart(document.querySelector('#pieChart'), {
+                    type: 'pie',
+                    data: {
+                      labels: [
+                        'Benign 83%',
+                        'Attack 17%',
+                      ],
+                      datasets: [{
+                        label: 'My First Dataset',
+                        data: [2359289 , 471454],
+                        backgroundColor: [
+                            'rgb(54, 162, 235)',
+                          'rgb(255, 99, 132)',
+                        ],
+                        hoverOffset: 4,
+                      }]
+                    }
+                  });
+                });
+              </script>
+              <!-- End Pie CHart -->
+
+            </div>
+          </div>
+
+        </div>
+             </div>
+         </div>
+             <div class="col-12">
+                           <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">CICIDS2017中的攻击类型</h5>
+
+              <!-- Default Tabs -->
+              <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link active" id="HULK-tab" data-bs-toggle="tab" data-bs-target="#HULK" type="button" role="tab" aria-controls="DoS HULK" aria-selected="true">DoS HULK</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="PortScan-tab" data-bs-toggle="tab" data-bs-target="#PortScan" type="button" role="tab" aria-controls="PortScan" aria-selected="false">PortScan</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="DDoS-tab" data-bs-toggle="tab" data-bs-target="#DDoS" type="button" role="tab" aria-controls="DDoS" aria-selected="false">DDoS</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="Goldeneye-tab" data-bs-toggle="tab" data-bs-target="#Goldeneye" type="button" role="tab" aria-controls="Goldeneye" aria-selected="false">DoS Goldeneye</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="FTP-tab" data-bs-toggle="tab" data-bs-target="#FTP" type="button" role="tab" aria-controls="FTP" aria-selected="false">FTP-Patator</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="SSH-tab" data-bs-toggle="tab" data-bs-target="#SSH" type="button" role="tab" aria-controls="SSH" aria-selected="false">SSH-Patator</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="slowloris-tab" data-bs-toggle="tab" data-bs-target="#slowloris" type="button" role="tab" aria-controls="slowloris" aria-selected="false">DoS Slowloris</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="slowloris-tab" data-bs-toggle="tab" data-bs-target="#slowloris" type="button" role="tab" aria-controls="slowloris" aria-selected="false">DoS Slowloris</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="Botnet-tab" data-bs-toggle="tab" data-bs-target="#Botnet" type="button" role="tab" aria-controls="Botnet" aria-selected="false">Botnet</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="Infiltration-tab" data-bs-toggle="tab" data-bs-target="#Infiltration" type="button" role="tab" aria-controls="Infiltration" aria-selected="false">Infiltration</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="Heartbleed-tab" data-bs-toggle="tab" data-bs-target="#Heartbleed" type="button" role="tab" aria-controls="Heartbleed" aria-selected="false">Heartbleed</button>
+                </li>
+              </ul>
+              <div class="tab-content pt-2" id="myTabContent">
+                <div class="tab-pane fade show active" id="HULK" role="tabpanel" aria-labelledby="HULK-tab">
+                  HULK（HTTP Unbearable Load King）发生在CICIDS2017数据集星期三的记录中。HULK可用于执行DoS和DDoS记录，由于这种攻击会直接影响服务器负载，它可以在一分钟左右的短时间内禁用服务器。HULK能够隐藏真实的用户代理，并为每个攻击请求使用不同的template。在攻击期间，它会创建TCP-STN泛洪和多个HTTP-GET泛洪请求。
+                </div>
+                <div class="tab-pane fade" id="PortScan" role="tabpanel" aria-labelledby="PortScan-tab">
+                    CICIDS2017数据集中的PortScan（端口扫描）攻击是由Nmap程序进行的，在星期四下午的攻击记录中。PortScan是一种常见的攻击类型，用于收集有关攻击者如何进入系统的信息。通过这种攻击，攻击者可以了解有关已连接设备的许多关键信息，如操作系统、正在运行的服务和端口状态。在PortScan攻击中，攻击者会向每个端口发送一条消息，并从受害者处收到的响应类型中得到该端口是否使用的信息，通过使用这些信息，攻击者了解所使用的系统并检测其弱点。
+                </div>
+                <div class="tab-pane fade" id="DDoS" role="tabpanel" aria-labelledby="DDoS-tab">
+                    CICIDS2017数据集中的DDoS（分布式拒绝服务）攻击是由发送HTTP，TCP，UDP请求的LOIC程序产生的，发生在数据集星期五下午的记录中。DDoS是一种基于DoS的特殊形式的拒绝服务攻击。与DoS攻击不同，DDoS攻击不是由单台主机发起的，而攻击源借助数百、甚至数千台被恶意软件感染后安装了攻击进程的主机同时发起的。每一个攻击代理主机会向目标主机发送大量经过伪装的服务请求数据包，这些数据包的来源无法确定，它们的请求通常需要消耗大量的系统资源。这样会导致目标主机无法为用户提供正常服务，甚至可能会导致整个系统崩溃。由这些设备创建的网络被称为“僵尸网络”。
+                </div>
+                <div class="tab-pane fade" id="Goldeneye" role="tabpanel" aria-labelledby="Goldeneye-tab">
+                    DoS Goldeneye攻击发生在CICIDS2017数据集星期三的记录中。这是一种基于python的DoS攻击，此攻击的目的是通过消耗受害者的系统资源，从而阻止合法用户接收服务。
+                    <p>Goldeneye是一种多线程攻击，它可以有效使用多线程CPU和硬件内存来启动HTTP洪水攻击。Goldeneye在攻击期间不对数据包进行加密，也不会创建假的源IP地址（IP欺骗），可以在所有Linux、Mac和Windows操作系统上运行。通过使用Keep-Alive方法，它最大化了通过单个TCP连接传输的文件大小；此外，它通过http首部中的no-cache指令，禁用了http的缓存控制。通过使用这两个特性，系统资源得以被消耗得非常快。</p>
+                </div>
+                <div class="tab-pane fade" id="FTP" role="tabpanel" aria-labelledby="FTP-tab">
+                    FTP-Patator攻击使用Python编写的多线程工具Patator进行攻击，此攻击发生在CICIDS2017数据集星期二上午的记录中。FTP（文件传输协议）是一种网络协议，它在网络中的客户端和服务器之间提供文件传输。要使用FTP传输文件，需要在要发送的网络上有有效的用户名和密码，而FTP-Patator攻击就是旨在夺取这个用户名和密码的一种蛮力攻击。蛮力攻击是通过尝试口令或密钥的所有可能值，以获取实际口令或密钥，并实施攻击的行为。在短时间内大量不成功的进入尝试是蛮力攻击的一个特性，因此可以在蛮力攻击期间看到密集的数据包流。
+                </div>
+                <div class="tab-pane fade" id="SSH" role="tabpanel" aria-labelledby="SSH-tab">
+                     SSH-Patator使用Python编写的多线程工具Patator进行攻击，此攻击发生在CICIDS2017数据集星期二下午的记录中。在此攻击中，攻击者通过对系统的远程访问，实现对系统的完全控制。此攻击包括三个步骤：<br>
+                    （1）扫描：SSH-Patator攻击的第一阶段，攻击者通过对网络或子网上的IP块的特定端口号执行扫描，试图找到运行SSH的主机。<br>
+                    （2）蛮力攻击：在此阶段，攻击者试图使用大量的用户名和密码组合，尝试登录上一阶段发现的主机系统。<br>
+                    （3）成功入侵：攻击者通过成功登录获得合法的用户权限。<br>
+                </div>
+                <div class="tab-pane fade" id="slowloris" role="tabpanel" aria-labelledby="slowloris-tab">
+                    DoS Slowloris发生在CICIDS2017数据集星期三的记录中。此攻击的目的是消耗受害者的系统资源，从而阻止合法用户接收服务。此攻击是用Perl编程语言编写的，可在Windows和Linux操作系统上运行。DoS Slowloris攻击过程中会产生TCP-SYN洪水，目的是减少服务器可以提供服务的用户数量；同时目标Web服务器被大量连接，并较长时间地保持连接状态。在此攻击过程中，会观察到大量带有SYN标志的不完整的TCP数据包。
+                </div>
+                <div class="tab-pane fade" id="Botnet" role="tabpanel" aria-labelledby="Botnet-tab">
+                    Botnet（僵尸网络）攻击是使用python程序编写的Ares攻击工具进行的，此攻击发生在CICIDS2017数据集星期五上午的记录。Botnet是一个由受恶意软件感染的计算机创建的网络。由于恶意软件，网络中的计算机在其所有者不知情的情况下进行各种有害活动，这些计算机可以由机器人管理员远程控制，并用于制造SPAM（未经请求的电子邮件）或进行DDoS攻击。检测Botnet只能在僵尸网络活动状态下（攻击期间）进行，在活动状态下，可以检测网络中每个包的字节数和带有PSH标志的包数来识别此攻击。
+                </div>
+                <div class="tab-pane fade" id="Infiltration" role="tabpanel" aria-labelledby="Infiltration-tab">
+                    Infiltration（渗漏）攻击是发生在星期四下午的CICIDS2017数据集中的记录。然而，在这个数据集中的渗漏概念并不是一般的攻击，而是一种针对特定场景的攻击。在这种情况下，由于病毒文件进入系统，变得易受攻击的网络容易受到信息收集攻击。<br>
+                    Infiltration攻击场景如下：病毒通过受害者使用Windows从Dropbox下载的文件或者受害者使用Macintosh从USB闪存盘复制的文件进入系统。并在下一阶段中攻击者将利用该病毒创建的漏洞对网络执行端口扫描攻击。
+                </div>
+                <div class="tab-pane fade" id="Heartbleed" role="tabpanel" aria-labelledby="Heartbleed-tab">
+                    Heartbleed（心血漏洞）是一个出现在加密程序库OpenSSL（SSL和TLS协议的开源实现）的安全漏洞，此攻击利用了TSL协议的Heartbeat，发生在星期三下午的CICIDS2017数据集中的记录。<br>
+                    Heartbeat的正常操作如下：客户端向服务器发送一个由随机有效负载组成的请求，服务器用一个包含相同的有效负载的数据包来响应此请求。而在Heartbleed攻击期间，一个特别创建的Heartbeat请求会被发送到服务器，这个请求实际上是空的，但它携带了大量数据。在此阶段，由于OpenSSL中的一个漏洞，服务器将发送一段指定长度的内存以响应此消息。这些部分包含不应发送的各种机密信息，如个人信息、用户名及密码等，这些包的大小最大可达16 KB，攻击者可以不限制地重复此操作。
+                </div>
+              </div><!-- End Default Tabs -->
+
+            </div>
+          </div>
+             </div>
+                 <div class="col-12">
+                <div class="card mb-3">
+            <div class="row g-0">
+              <div class="col-md-6">
+                  <div class="card-body">
+                <img src="{% static "img/3.png" %}" class="img-fluid rounded-start" alt="...">
+                  </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card-body"><br>
+                  <h5 class="card-title"><strong>RF-LSTM异常流量检测模型</strong></h5>
+                    <br>
+                  <p class="card-text">本研究提出的基于RF-LSTM的异常流量检测的方法，其中包括了数据预处理、特征提取和LSTM模型训练等步骤。
+                      <p>基于RF-LSTM的异常流量检测模型主要由随机森林和LSTM网络两部分组成。其中随机森林部分负责特征提取，LSTM网络部分则作为分类器进行学习和流量分类，从而实现对异常流量的检测。</p>
+                    <p>该模型能够针对高维数据特征，选择出重要性评分较高的相关特征，以更有效地用于异常流量检测。</p>
+                    <p>相比于现有的CNN方法，该模型可以处理高维度数据，具有较强的泛化能力，而CNN算法需要更多数据才能实现反向传播，同时池化层的存在也会导致一些信息的丢失，从而降低算法的效率。另外，随机森林算法不仅实现简单，还能平衡属性权重带来的误差。</p>
+                    </p>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div><!-- End Card with an image on left -->
+
+            <div class="col-12">
+                          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title"><strong>异常流量检测构建流程</strong></h5>
+
+              <!-- Default Accordion -->
+              <div class="accordion" id="accordionExample">
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      <strong>数据预处理</strong>
+                    </button>
+                  </h2>
+                  <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <p>实验步骤首先是将公开的网络流量数据集CICIDS2017进行数据预处理，在第一步执行数据清理过程，从错误和缺陷中清除数据集，同时为了处理文本类型的数据，需要将其转换为数值数据；此外，为了解决数据不平衡问题和测试模型对于单个攻击类型的效果，为每种攻击类型构造自己的数据集，以保证每种类型的攻击在训练和测试时都能得到充分的考虑。这些处理方法可以提高模型的效果和稳定性。之后将各数据集输入所构建的异常流量检测模型进行识别，并对模型总体效果进行验证。</p><br>
+                    <div class="row">
+        <div class="col-md-6">
+
+            <div class="card-body">
+              <center><h8><strong>预处理过后的CICIDS2017数据集中的流量分布</strong></h8></center>
+
+              <!-- Donut Chart -->
+              <div id="donutChart"></div>
+
+              <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                  new ApexCharts(document.querySelector("#donutChart"), {
+                    series: [2117531, 231073, 158930, 128027, 10293, 7938, 5897, 5796, 5499, 1966, 36, 11],
+                    chart: {
+                      height: 300,
+                      type: 'donut',
+                      toolbar: {
+                        show: true
+                      }
+                    },
+                    labels: ['BENIGN', 'DoS Hulk', 'PortScan', 'DDoS', 'DoS GoldenEye','FTP-Patator','SSH-Patator','DoS slowloris','DoS Slowhttptest','Bot','Infiltration','Heartbleed'],
+                  }).render();
+                });
+              </script>
+              <!-- End Donut Chart -->
+
+            </div>
+          </div>
+
+
+            <div class="col-md-6">
+            <div class="card-body">
+                <center><h8><strong>攻击流和正常流占比</strong></h8></center>
+
+              <!-- Bar Chart -->
+              <div id="barChart" style="min-height: 310px;" class="echart"></div>
+
+              <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                  echarts.init(document.querySelector("#barChart")).setOption({
+                    xAxis: {
+                      type: 'category',
+                      data: ['ATTACK 21%','BENIGN 79%']
+                    },
+                    yAxis: {
+                      type: 'value',
+                        name:'number(1e5)'
+                    },
+                    series: [{
+                      data: [5.55466,21.17531],
+                      type: 'bar'
+                    }]
+                  });
+                });
+              </script>
+              <!-- End Bar Chart -->
+
+            </div>
+          </div>
+
+    </div><center>
+        <div class="col-lg-8">
+            <div class="card-body">
+              <h5 class="card-title">数据集划分</h5>
+
+              <!-- Table with hoverable rows -->
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th scope="col">标签名</th>
+                    <th scope="col">攻击类型数量</th>
+                    <th scope="col">正常类型数量</th>
+                    <th scope="col">总量</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">DoS Hulk</th>
+                    <td>231073</td>
+                    <td>705189</td>
+                    <td>936262</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">PortScan</th>
+                    <td>158930</td>
+                    <td>423047</td>
+                    <td>581977</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">DDoS</th>
+                    <td>128027</td>
+                    <td>302180</td>
+                    <td>430207</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">DoS GoldenEye</th>
+                    <td>10293</td>
+                    <td>24413</td>
+                    <td>34706</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">FTP-Patator</th>
+                    <td>7938</td>
+                    <td>18668</td>
+                    <td>26606</td>
+                  </tr>
+                <tr>
+                    <th scope="row">SSH-Patator</th>
+                    <td>5897</td>
+                    <td>13634</td>
+                    <td>19531</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">DoS slowloris</th>
+                    <td>5796</td>
+                    <td>13583</td>
+                    <td>19379</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">DoS Slowhttptest</th>
+                    <td>5499</td>
+                    <td>12813</td>
+                    <td>18312</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Bot</th>
+                    <td>1966</td>
+                    <td>4600</td>
+                    <td>6566</td>
+                  </tr>
+                <tr>
+                    <th scope="row">Infiltration</th>
+                    <td>36</td>
+                    <td>97</td>
+                    <td>133</td>
+                  </tr>
+                    <tr>
+                    <th scope="row">Heartbleed</th>
+                    <td>11</td>
+                    <td>25</td>
+                    <td>36</td>
+                  </tr>
+                </tbody>
+              </table>
+              <!-- End Table with hoverable rows -->
+                </div>
+            </div></center>
+
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      <strong>特征选择</strong>
+                    </button>
+                  </h2>
+                  <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <p><strong>当计算特征的重要性权值时，采用随机森林算法针对每种攻击类型，计算该攻击类型流量特征的重要性评分。</strong></p>
+                            <p>具体地，我们对每种攻击类型的数据集训练了一个随机森林分类器，计算每个特征对分类器的贡献。然后，我们选取了5个重要性评分最高的特征，对数据进行特征降维处理。</p>
+                           <center><div class="col-lg-6">
+                        <div class="card-body">
+              <h5 class="card-title">每种攻击类型的特征的重要度评分</h5>
+
+              <!-- Slides with controls -->
+              <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <img src="{% static "img/BOT.png" %}" class="d-block w-100" alt="...">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="{% static "img/DDOS.png" %}" class="d-block w-100" alt="...">
+                  </div>
+                  <div class="carousel-item">
+                    <img src="{% static "img/GOLDENEYE.png" %}" class="d-block w-100" alt="...">
+                  </div>
+                    <div class="carousel-item">
+                    <img src="{% static "img/HULK.png" %}" class="d-block w-100" alt="...">
+                  </div>
+                    <div class="carousel-item">
+                    <img src="{% static "img/SLOWHTTPTEST.png" %}" class="d-block w-100" alt="...">
+                  </div>
+                     <div class="carousel-item">
+                    <img src="{% static "img/SLOWLORIS.png" %}" class="d-block w-100" alt="...">
+                  </div>
+                     <div class="carousel-item">
+                    <img src="{% static "img/FTP.png" %}" class="d-block w-100" alt="...">
+                  </div>
+                    <div class="carousel-item">
+                    <img src="{% static "img/HEART.png" %}" class="d-block w-100" alt="...">
+                  </div>
+                    <div class="carousel-item">
+                    <img src="{% static "img/INFIL.png" %}" class="d-block w-100" alt="...">
+                  </div>
+                    <div class="carousel-item">
+                    <img src="{% static "img/PORTSCAN.png" %}" class="d-block w-100" alt="...">
+                  </div>
+                    <div class="carousel-item">
+                    <img src="{% static "img/SSH.png" %}" class="d-block w-100" alt="...">
+                  </div>
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+
+              </div><!-- End Slides with controls -->
+
+            </div>
+                               </div></center>
+                <p>为了更好地统一数据集中各种攻击类型特征的共性与特性，更有效地验证模型的整体效果，本研究根据将所有正常类型以及所有异常类型分别进行编码，用随机森林算法应用到整个数据集进行特征选择。</p>
+                <center>
+                    <div class="col-12">
+
+
+                       <div class="row">
+                       <div class="col-lg-6">
+                           <div class="card-body"><center>
+                           <h5 class="card-title">总数据集重要度评分</h5>
+                       <img src="{% static "img/all.png" %}" class="img-fluid rounded-start" alt="..."></center>
+                           </div>
+                   </div>
+         <div class="col-lg-6">
+
+            <div class="card-body">
+              <h5 class="card-title">重要性权重最高的7个特征</h5>
+
+              <!-- Table with stripped rows -->
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">特征</th>
+                    <th scope="col">重要度权重</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Bwd Packet Length Std</td>
+                    <td>0.376070</td>
+                  </tr>
+                  <tr>
+                    <td>Flow IAT Min</td>
+                    <td>0.012861</td>
+                  </tr>
+                  <tr>
+                    <td>Fwd Packet Length Std</td>
+                    <td>0.009010</td>
+                  </tr>
+                  <tr>
+                    <td>Flow IAT Std</td>
+                    <td>0.00294</td>
+                  </tr>
+                  <tr>
+                    <td>Total Length of Bwd Packets</td>
+                    <td>0.002583</td>
+                  </tr>
+                   <tr>
+                    <td>Flow Duration</td>
+                    <td>0.001166</td>
+                  </tr>
+                 <tr>
+                    <td>Flow IAT Mean</td>
+                    <td>0.001020</td>
+                  </tr>
+                </tbody>
+              </table>
+              <!-- End Table with stripped rows -->
+
+          </div>
+                </div>
+                       </div>
+                        </div>
+                </center>
+
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                      <strong>LSTM模型训练</strong>
+                    </button>
+                  </h2>
+                  <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      <strong>使用随机森林算法进行特征提取后，选取上述影响整个数据集的评分度最高的7个特征作为LSTM系统的输入，使用LSTM网络进行异常检测与识别。</strong>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-lg-6">
+
+
+              <!-- Table with stripped rows -->
+              <table class="table table-striped"style="transform: scale(0.8)">
+                <thead>
+                  <tr>
+                    <th scope="col">参数</th>
+                    <th scope="col">参数值</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>LSTM1</td>
+                    <td>128</td>
+                  </tr>
+                  <tr>
+                    <td>LSTM2</td>
+                    <td>128</td>
+                  </tr>
+                  <tr>
+                    <td>LSTM3</td>
+                    <td>128</td>
+                  </tr>
+                  <tr>
+                    <td>Dropout</td>
+                    <td>0.5</td>
+                  </tr>
+                  <tr>
+                    <td>Dense</td>
+                    <td>1</td>
+                  </tr>
+                 <tr>
+                    <td>Activation</td>
+                    <td>sigmoid</td>
+                  </tr>
+                 <tr>
+                    <td>Learning rate</td>
+                    <td>0.0001</td>
+                  </tr>
+                 <tr>
+                    <td>Epochs</td>
+                    <td>0.0001</td>
+                  </tr>
+                <tr>
+                    <td>Optimizer</td>
+                    <td>Adadelt</td>
+                  </tr>
+                 <tr>
+                    <td>Loss function</td>
+                    <td>categorical_crossentropy</td>
+                  </tr>
+                <tr>
+                    <td>Metrics</td>
+                    <td>accuracy</td>
+                  </tr>
+                <tr>
+                    <td>Batch_size</td>
+                    <td>256</td>
+                  </tr>
+                </tbody>
+              </table>
+              <!-- End Table with stripped rows -->
+
+            </div>
+
+                                <div class="col-lg-6"><center>
+                                    <img src="{% static "img/loss.png" %}" class="img-fluid rounded-start" alt="..." style="transform: scale(0.8)"></center>
+                                </div>
+                        </div>
+                    </div>
+                        <p>为了验证本文方法在异常流量检测方面的优越性，针对每种攻击类型以及所有攻击类型汇总的流量数据分别使用常见的机器学习算法进行实验对比，如朴素贝叶斯（Naïve Bayes）、K近邻（KNN）、自适应增强（AdaBoost）、多层感知机网络（MLP）、二次判别分析（QDA）等，使用准确率（ACC）、召回率（RE）、精确率（PR）以及分类器精度得分（F1-score）作为评价指标。</p>
+                  </div>
+                      <center>
+                          <div class="col-lg-7">
+                              <img src="{% static "img/knn.png" %}" class="img-fluid rounded-start" alt="...">
+                          </div>
+                      </center>
+                </div>
+              </div><!-- End Default Accordion Example -->
+
+            </div>
+          </div>
+            </div>
+
+
+
+
+
+
+            </div>
+        </div>
+
+
+    </section>
+</div>
+  </main><!-- End #main -->
+
+
+  <a href="" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+
+  <!-- Vendor JS Files -->
+  <script src="{% static "vendor/apexcharts/apexcharts.min.js" %}"></script>
+  <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+  <script src="{% static "vendor/chart.js/chart.min.js" %}"></script>
+  <script src="{% static "vendor/echarts/echarts.min.js" %}"></script>
+  <script src="{% static "vendor/quill/quill.min.js" %}"></script>
+  <script src="{% static "vendor/simple-datatables/simple-datatables.js" %}"></script>
+  <script src="{% static "vendor/tinymce/tinymce.min.js" %}"></script>
+  <script src="{% static "vendor/php-email-form/validate.js" %}"></script>
+
+  <!-- Template Main JS File -->
+  <script src="{% static "js/main.js" %}"></script>
+
+</body>
+
+</html>
