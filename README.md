@@ -83,4 +83,4 @@ python manage.py runserver
 
 ![上传文件界面](./img/上传文件界面.png)
 
-![RF-LSTM 模型与其他机器学习模型的性能对比](./img/RF-LSTM 模型与其他机器学习模型的性能对比.png)
+![模型与其他机器学习模型的性能对比](./READMEimages/模型与其他机器学习模型的性能对比-1714486957478-2.png)
