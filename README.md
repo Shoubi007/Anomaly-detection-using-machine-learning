@@ -80,8 +80,8 @@ python manage.py runserver
 
 ## 系统效果
 
-![图 2 异常流量检测系统展示图](./READMEimages/图 2 异常流量检测系统展示图.png)
+![图 2 异常流量检测系统展示图](./img/图 2 异常流量检测系统展示图.png)
 
-![图 3 上传文件显示检测结果](./READMEimages/图 3 上传文件显示检测结果.png)
+![图 3 上传文件显示检测结果](./img/图 3 上传文件显示检测结果.png)
 
-![](./READMEimages/图1 RF-LSTM 模型与其他机器学习模型的性能对比.png)
+![](./img/图1 RF-LSTM 模型与其他机器学习模型的性能对比.png)
